@@ -2,9 +2,13 @@ package controllers
 
 import play.api.mvc._
 import com.sksamuel.{scrimage => ImgLib}
-import java.util.Scanner
 import concurrent._
 import java.io.File
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+//import play.api.{Application => PlayApplication}
+//import play.api.Configuration
+import play.api.Play
+
 /**
  * Handles image processing
  */
@@ -23,10 +27,9 @@ object Image extends Controller {
 //    ImgLib.filter.TritoneFilter(10, 10, 10)
   )
 
+  private val imgStorageFolder = s"${Play.current.path}/public/images/generated/"
 
-  private val imgStorageFolder = "app/generated"
-
-  def process = Action { implicit request =>
+  def process = Action.async { implicit request =>
 
     val image = this.getImageFromPost(request)
 
@@ -34,25 +37,7 @@ object Image extends Controller {
 
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
-//    implicit val writer = ImgLib.JpegWriter().withCompression(50).withProgressive(true)
-
-    // http://stackoverflow.com/questions/24059266/convert-contents-of-a-bytearrayinputstream-to-string
-//    val scanner = new Scanner(processedImage.stream);
-//    scanner.useDelimiter("\\Z");//To read all scanner content in one String
-//    var data = "";
-//    if (scanner.hasNext())
-//      data = scanner.next();
-//
-////    println(processedImage.stream)
-//    // We need to write the image, either to a file or serve it directly
-////    image.output(new File("/tmp/tmp.png"));
-//
-//    println(processedImage)
-
-//    processedImage.toNewBufferedImage().getGraphics().drawImage(processedImage.toNewBufferedImage(), 0, 0, null)
-
-
-    Ok(views.html.main())
+    storedImages.map(images => Ok(views.html.processed(images)))
   }
 
   /**
@@ -66,9 +51,9 @@ object Image extends Controller {
 
   private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) = {
     images.map(imageList => imageList.map(image => {
-      val path = "/home/sam/spaghetti.png"
-      image.output(new File(path))
-      path
+      val imageName = s"${this.generateRandomPostId()}.png"
+      val path = s"${this.imgStorageFolder}$imageName"
+      val newFile = new File(path)
     }))
   }
 
