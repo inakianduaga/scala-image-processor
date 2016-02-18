@@ -8,7 +8,6 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 //import play.api.{Application => PlayApplication}
 //import play.api.Configuration
 import play.api.Play
-
 /**
  * Handles image processing
  */
@@ -16,15 +15,47 @@ object Image extends Controller {
 
   private val filters: List[ImgLib.Filter] = List(
     ImgLib.filter.BlurFilter,
-//    ImgLib.filter.ColorHalftoneFilter(10),
-//    ImgLib.filter.DiffuseFilter,
-//    ImgLib.filter.ContourFilter,
-//    ImgLib.filter.EdgeFilter,
-//    ImgLib.filter.GammaFilter(3),
-//    ImgLib.filter.HSBFilter(100),
-//    ImgLib.filter.OilFilter(4, 6),
-    ImgLib.filter.RobertsFilter
-//    ImgLib.filter.TritoneFilter(10, 10, 10)
+    ImgLib.filter.ColorHalftoneFilter(1),
+    ImgLib.filter.DiffuseFilter(3),
+    ImgLib.filter.ContourFilter(),
+    ImgLib.filter.EdgeFilter,
+    ImgLib.filter.GammaFilter(2.2),
+//    ImgLib.filter.HSBFilter(100, 44, 10),
+    ImgLib.filter.OilFilter(2, 4),
+    ImgLib.filter.RobertsFilter,
+
+
+
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+    //    ImgLib.filter.TelevisionFilter,
+        ImgLib.filter.SummerFilter(true),
+
+
+
+
+    ImgLib.filter.TritoneFilter(150, 80, 50),
+    ImgLib.filter.SolarizeFilter,
+    ImgLib.filter.TelevisionFilter,
+    ImgLib.filter.TwirlFilter(1.1, 70),
+    ImgLib.filter.VignetteFilter(),
+    ImgLib.filter.VintageFilter
+
+
+
+
   )
 
   private val imgStorageFolder = s"${Play.current.path}/public/images/generated/"
@@ -54,6 +85,8 @@ object Image extends Controller {
       val imageName = s"${this.generateRandomPostId()}.png"
       val path = s"${this.imgStorageFolder}$imageName"
       val newFile = new File(path)
+      image.output(newFile)
+      s"/assets/images/generated/$imageName"
     }))
   }
 
@@ -63,7 +96,7 @@ object Image extends Controller {
   }
 
   private def generateRandomPostId(): Integer = {
-    scala.util.Random.nextInt(10000)
+    scala.util.Random.nextInt(1000000)
   }
 
 }
