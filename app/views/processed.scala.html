@@ -1,0 +1,19 @@
+@(imgPaths: List[String])
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+    <h1>The processed images are: </h1>
+    <div>
+        @imgPaths.map{ path =>
+            <img src="@path" />
+        }
+    </div>
+
+</body>
+</html>
