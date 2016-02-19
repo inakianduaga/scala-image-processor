@@ -1,6 +1,6 @@
-name := """scala-image"""
+name := """scala-image-processor"""
 
-version := "1.0-SNAPSHOT"
+version := "0.1"
 
 // Ammonite Repl
 libraryDependencies += "com.lihaoyi" % "ammonite-repl" % "0.5.4" % "test" cross CrossVersion.full

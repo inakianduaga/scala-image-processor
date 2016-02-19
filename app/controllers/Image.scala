@@ -23,9 +23,6 @@ object Image extends Controller {
 //    ImgLib.filter.HSBFilter(100, 44, 10),
     ImgLib.filter.OilFilter(2, 4),
     ImgLib.filter.RobertsFilter,
-
-
-
     //    ImgLib.filter.TelevisionFilter,
     //    ImgLib.filter.TelevisionFilter,
     //    ImgLib.filter.TelevisionFilter,
@@ -41,21 +38,13 @@ object Image extends Controller {
     //    ImgLib.filter.TelevisionFilter,
     //    ImgLib.filter.TelevisionFilter,
     //    ImgLib.filter.TelevisionFilter,
-        ImgLib.filter.SummerFilter(true),
-
-
-
-
+    ImgLib.filter.SummerFilter(true),
     ImgLib.filter.TritoneFilter(150, 80, 50),
     ImgLib.filter.SolarizeFilter,
     ImgLib.filter.TelevisionFilter,
     ImgLib.filter.TwirlFilter(1.1, 70),
     ImgLib.filter.VignetteFilter(),
     ImgLib.filter.VintageFilter
-
-
-
-
   )
 
   private val imgStorageFolder = s"${Play.current.path}/public/images/generated/"

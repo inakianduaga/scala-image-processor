@@ -1,19 +1,91 @@
 <!DOCTYPE html>
+<html lang="en">
 
-<html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Image Processor</title>
+
+        @*Bootstrap*@
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css">
+
+        @* Styles *@
+        <link rel="stylesheet/less" type="text/css" href="/assets/styles/uploader.less" />
+
     </head>
+
     <body>
-        <h1>Just Play Scala</h1>
-        <h2>Upload image</h2>
+        <div class="container">
+
+            <br/>
+
+            <div class="row">
+                <div class="col col-xs-12">
+                    <h3>Scala image processor demo</h3>
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="row">
+                <div class="col col-xs-12 col-md-3">
+
+                    <div class="card">
+                        <div class="card-header">
+                            Upload image...
+                        </div>
+                        <div class="card-block">
+                            <form action="/image" method="post" enctype="multipart/form-data">
+                                <fieldset class="form-group">
+                                    <label for="fileInput">Select image to upload:</label>
+                                    <br/>
+                                    <input type="file" name="fileInput" id="fileToUpload">
+                                    <br/><br/>
+                                    <button type="submit" class="btn btn-primary" id="manualUploadSubmit">Process</button>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col col-xs-12 col-md-4">
+
+                    <div class="card">
+                        <div class="card-header">
+                            ...or try a random one <button type="submit" class="btn btn-info btn-sm label label-info pull-right" id="fetchImage">Fetch image</button>
+                        </div>
+                        <div class="card-block">
+
+                            <div id="imageContainer" class="imageContainer">
+
+                            </div>
+
+                            <button id="submitDownloaded" type="submit" class="btn btn-primary hide">Process</button>
 
 
-        <form action="/image" method="post" enctype="multipart/form-data">
-            Select image to upload:
-            <input type="file" name="image" id="fileToUpload">
-            <input type="submit" value="Upload Image" name="submit">
-        </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+        @*Jquery *@
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
+        @*Bootstrap*@
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/umd/button.js"></script>
+
+        @* Babel transpiler *@
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/6.1.19/browser.js"></script>
+
+        @*Api*@
+        <script type="text/javascript" src="/assets/scripts/uploader.js"></script>
+
+        @*Less compiler *@
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.6.0/less.min.js"></script>
 
     </body>
 </html>
