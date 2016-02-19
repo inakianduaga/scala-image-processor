@@ -5,9 +5,9 @@ import com.sksamuel.{scrimage => ImgLib}
 import concurrent._
 import java.io.File
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-//import play.api.{Application => PlayApplication}
-//import play.api.Configuration
 import play.api.Play
+import play.api.libs.json.Json
+
 /**
  * Handles image processing
  */
@@ -57,7 +57,9 @@ object Image extends Controller {
 
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
-    storedImages.map(images => Ok(views.html.processed(images)))
+//    storedImages.map(images => Ok(views.html.processed(images)))
+
+    storedImages.map(images => Ok(Json.toJson(images)))
   }
 
   /**

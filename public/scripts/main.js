@@ -3,9 +3,11 @@ var ScalaDemo = (function() {
     var RANDOM_IMAGE_SIZE = {
         //width: 1000,
         //height: 600,
-        width: 200,
-        height: 100,
+        width: 600,
+        height: 400,
     };
+
+    var galleryPlaceholder = $('#resultsPlaceholder').eq(0);
 
     var RANDOM_IMAGE_URL = 'https://unsplash.it/'+RANDOM_IMAGE_SIZE.width+'/+'+RANDOM_IMAGE_SIZE.height+'?random';
 
@@ -28,34 +30,15 @@ var ScalaDemo = (function() {
         xhr.send(null);
     };
 
-    //var uploadFile = (url, blobOrFile, success) => {
-    //
-    //    var xhr = new XMLHttpRequest();
-    //    xhr.open('POST', url, true);
-    //    xhr.onload = (e) => {
-    //        console.log(e);
-    //        success(e);
-    //    };
-    //
-    //    xhr.send(blobOrFile);
-    //};
-
     var uploadFile = (url, blobOrFile, success) => {
         var formData = new FormData();
-
-//// HTML file input, chosen by user
-//        formData.append("userfile", fileInputElement.files[0]);
-
-// JavaScript file-like object
-//        var content = '<a id="a"><b id="b">hey!</b></a>'; // the body of the new file...
-//        var blob = new Blob([content], { type: "text/xml"});
 
         formData.append("fileInput", blobOrFile);
 
         var request = new XMLHttpRequest();
         request.open("POST", url);
         request.send(formData);
-        request.addEventListener('load', () => success(request.response));
+        request.addEventListener('load', () => success(JSON.parse(request.response)));
 
     }
 
@@ -68,13 +51,26 @@ var ScalaDemo = (function() {
 
     var getLastDownloadedBinary = () => lastDownloadedBinary;
 
+    var generateResultsGallery = (imageList) => {
+        imageList
+            //.map(path => '<img src="'+path+'" />')
+            .forEach(path => $(galleryPlaceholder).prepend($('<img>', {src: path})) );
+
+        $(galleryPlaceholder).collagePlus();
+    };
+
+    var generateImageMarkup = () => {
+
+    }
+
     return {
-        downloadFile,
-        imageFromBinary,
         RANDOM_IMAGE_URL,
         SERVER_URL_ENDPOINT,
+        downloadFile,
+        imageFromBinary,
         getLastDownloadedBinary,
         uploadFile,
+        generateResultsGallery
     }
 })();
 
@@ -87,24 +83,13 @@ $('body').on('click', '#fetchImage', () => {
 });
 
 $('body').on('click', '#submitDownloaded', () => {
-    ScalaDemo.uploadFile(ScalaDemo.SERVER_URL_ENDPOINT, ScalaDemo.getLastDownloadedBinary(), (e) => {
-        //$('#imageContainer').html(ScalaDemo.imageFromBinary(binary));
-        console.log(e);
-        //console.log(e.response);
-
-    })
+    ScalaDemo.uploadFile(ScalaDemo.SERVER_URL_ENDPOINT, ScalaDemo.getLastDownloadedBinary(), ScalaDemo.generateResultsGallery);
 });
 
 $('body').on('click', '#manualUploadSubmit', (e) => {
     e.preventDefault();
     var fileToUpload = $('#fileToUpload')[0].files[0];
-
-    ScalaDemo.uploadFile(ScalaDemo.SERVER_URL_ENDPOINT, fileToUpload, (e) => {
-        //$('#imageContainer').html(ScalaDemo.imageFromBinary(binary));
-        console.log(e);
-        //console.log(e.response);
-
-    })
+    ScalaDemo.uploadFile(ScalaDemo.SERVER_URL_ENDPOINT, fileToUpload, ScalaDemo.generateResultsGallery);
 });
 
 
