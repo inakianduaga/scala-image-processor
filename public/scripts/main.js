@@ -7,11 +7,18 @@ var ScalaDemo = (function() {
         height: 400,
     };
 
+    var multiThreaded = true;
+
     var galleryPlaceholder = $('#resultsPlaceholder').eq(0);
 
     var RANDOM_IMAGE_URL = 'https://unsplash.it/'+RANDOM_IMAGE_SIZE.width+'/+'+RANDOM_IMAGE_SIZE.height+'?random';
 
-    var SERVER_URL_ENDPOINT = '/image';
+    var SERVER_URL_ENDPOINTS = {
+        single: '/image/single',
+        threaded: 'image/threaded',
+    };
+
+    var getServerEndpoint = () => multiThreaded ? SERVER_URL_ENDPOINTS.threaded : SERVER_URL_ENDPOINTS.single;
 
     var lastDownloadedBinary;
 
@@ -42,7 +49,6 @@ var ScalaDemo = (function() {
 
     }
 
-
     var imageFromBinary = (blob) => {
         var img = document.createElement('img');
         img.src = URL.createObjectURL(blob);
@@ -52,6 +58,7 @@ var ScalaDemo = (function() {
     var getLastDownloadedBinary = () => lastDownloadedBinary;
 
     var generateResultsGallery = (imageList) => {
+        stopTimer();
         imageList
             //.map(path => '<img src="'+path+'" />')
             .forEach(path => $(galleryPlaceholder).prepend($('<img>', {src: path})) );
@@ -59,37 +66,75 @@ var ScalaDemo = (function() {
         $(galleryPlaceholder).collagePlus();
     };
 
-    var generateImageMarkup = () => {
+    var toggleThreadOption = () => multiThreaded = !multiThreaded;
 
-    }
+    var setThreadOption = (threaded) => multiThreaded = threaded;
+
+    var getTimerDomId = () => multiThreaded ? '#multiThreadTimer' : '#singleThreadTimer';
+
+    var startTimer = () => $(getTimerDomId()).TimeCircles({
+        "time": {
+            "Days": {
+                "show": false
+            },
+            "Hours": {
+                "show": false
+            },
+            "Minutes": {
+                "text": "Minutes",
+                "color": "#BBFFBB",
+                "show": true
+            },
+            "Seconds": {
+                "text": "Seconds",
+                "color": "#FF9999",
+                "show": true
+            }
+        }
+    });
+
+    var stopTimer = () => $(getTimerDomId()).TimeCircles().stop();
 
     return {
         RANDOM_IMAGE_URL,
-        SERVER_URL_ENDPOINT,
+        getServerEndpoint,
         downloadFile,
         imageFromBinary,
         getLastDownloadedBinary,
         uploadFile,
-        generateResultsGallery
+        generateResultsGallery,
+        toggleThreadOption,
+        setThreadOption,
+        startTimer,
+        stopTimer,
     }
 })();
+
 
 // Dom bindings
 
 $('body').on('click', '#fetchImage', () => {
     ScalaDemo.downloadFile(ScalaDemo.RANDOM_IMAGE_URL, (binary) => {
         $('#imageContainer').html(ScalaDemo.imageFromBinary(binary));
-    })
+        $('#submitDownloaded').removeClass('hide');
+    });
 });
 
 $('body').on('click', '#submitDownloaded', () => {
-    ScalaDemo.uploadFile(ScalaDemo.SERVER_URL_ENDPOINT, ScalaDemo.getLastDownloadedBinary(), ScalaDemo.generateResultsGallery);
+    ScalaDemo.uploadFile(ScalaDemo.getServerEndpoint(), ScalaDemo.getLastDownloadedBinary(), ScalaDemo.generateResultsGallery);
 });
 
 $('body').on('click', '#manualUploadSubmit', (e) => {
     e.preventDefault();
     var fileToUpload = $('#fileToUpload')[0].files[0];
-    ScalaDemo.uploadFile(ScalaDemo.SERVER_URL_ENDPOINT, fileToUpload, ScalaDemo.generateResultsGallery);
+    ScalaDemo.uploadFile(ScalaDemo.getServerEndpoint(), fileToUpload, ScalaDemo.generateResultsGallery);
 });
 
+$('body').on('click', '#submitDownloaded, #manualUploadSubmit', (e) => {
+    ScalaDemo.startTimer();
+});
 
+$('body').on('click', '.threadSelector', function() {
+    ScalaDemo.setThreadOption($(this).data('threaded'));
+    $('.progressWrapper').addClass('hide').filter('.'+$(this).data('target')).removeClass('hide');
+});

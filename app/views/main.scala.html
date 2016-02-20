@@ -1,3 +1,5 @@
+@(availableThreads: Int)
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +11,10 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css">
 
         @* Styles *@
-        <link rel="stylesheet/less" type="text/css" href="/assets/styles/uploader.less" />
+        <link rel="stylesheet/less" type="text/css" href="/assets/styles/main.less" />
+
+        @* Timecircles styles *@
+        <link rel="stylesheet/less" type="text/css" href="/assets/styles/timecircles.less" />
 
     </head>
 
@@ -67,6 +72,40 @@
                     </div>
 
                 </div>
+
+                <div class="col col-xs-12 col-md-4">
+
+                    <div class="card">
+                        <div class="card-header">
+                            Stats <span class="pull-right">(Available threads: @availableThreads)</span>
+                        </div>
+                        <div class="card-block">
+
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-sm btn-secondary threadSelector active" data-threaded="true" data-target="multi">
+                                    <input type="radio" autocomplete="off" checked> Multi Thread
+                                </label>
+                                <label class="btn btn-sm btn-secondary threadSelector" data-threaded="false" data-target="single">
+                                    <input type="radio" autocomplete="off"> Single Thread
+                                </label>
+                            </div>
+
+                            <br/>
+
+                            <div class="multi progressWrapper">
+                                <div id="multiThreadTimer" class="timerBox">
+                                </div>
+                            </div>
+
+                            <div class="single progressWrapper hide">
+                                <div id="singleThreadTimer" class="timerBox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
             <br/>
@@ -88,6 +127,9 @@
 
         @* Babel transpiler *@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/6.1.19/browser.js"></script>
+
+        @* Time circles *@
+        <script type="text/javascript" src="/assets/scripts/timecircles.js"></script>
 
         @*Api*@
         <script type="text/javascript" src="/assets/scripts/main.js"></script>

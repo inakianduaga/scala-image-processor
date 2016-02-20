@@ -3,10 +3,11 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET         /                    controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file)
+GET         /assets/*file        controllers.Assets.versioned(path="/public", file)
 
 
-POST    /image                     controllers.Image.process
+POST        /image/single        controllers.Image.process
+POST        /image/threaded      controllers.Image.process

@@ -57,8 +57,6 @@ object Image extends Controller {
 
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
-//    storedImages.map(images => Ok(views.html.processed(images)))
-
     storedImages.map(images => Ok(Json.toJson(images)))
   }
 
