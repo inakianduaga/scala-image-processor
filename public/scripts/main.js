@@ -1,10 +1,10 @@
 var ScalaDemo = (function() {
 
     var RANDOM_IMAGE_SIZE = {
-        //width: 1000,
-        //height: 600,
-        width: 600,
-        height: 400,
+        //width: 1200,
+        //height: 800,
+        width: 1000,
+        height: 600,
     };
 
     var multiThreaded = true;
@@ -59,11 +59,12 @@ var ScalaDemo = (function() {
 
     var generateResultsGallery = (imageList) => {
         stopTimer();
+        $(galleryPlaceholder).html('');
         imageList
             //.map(path => '<img src="'+path+'" />')
-            .forEach(path => $(galleryPlaceholder).prepend($('<img>', {src: path})) );
+            .forEach(path => $(galleryPlaceholder).prepend($('<div class="col col-xs-12 col-md-3"><a href="'+path+'" target="_blank"><img src="'+path+'"></a></div>')) );
 
-        $(galleryPlaceholder).collagePlus();
+        //$(galleryPlaceholder).collagePlus();
     };
 
     var toggleThreadOption = () => multiThreaded = !multiThreaded;
@@ -72,7 +73,7 @@ var ScalaDemo = (function() {
 
     var getTimerDomId = () => multiThreaded ? '#multiThreadTimer' : '#singleThreadTimer';
 
-    var startTimer = () => $(getTimerDomId()).TimeCircles({
+    var startTimer = () => $(getTimerDomId()).TimeCircles().destroy() && $(getTimerDomId()).TimeCircles({
         "time": {
             "Days": {
                 "show": false
@@ -131,6 +132,7 @@ $('body').on('click', '#manualUploadSubmit', (e) => {
 });
 
 $('body').on('click', '#submitDownloaded, #manualUploadSubmit', (e) => {
+    console.log('starting timer!');
     ScalaDemo.startTimer();
 });
 

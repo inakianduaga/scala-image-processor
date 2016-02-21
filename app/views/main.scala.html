@@ -19,7 +19,7 @@
     </head>
 
     <body>
-        <div class="container">
+        <div class="container_fluid wrapper">
 
             <br/>
 
@@ -53,11 +53,11 @@
 
                 </div>
 
-                <div class="col col-xs-12 col-md-4">
+                <div class="col col-xs-12 col-md-5">
 
                     <div class="card">
                         <div class="card-header">
-                            ...or try a random one <button type="submit" class="btn btn-info btn-sm label label-info pull-right" id="fetchImage">Fetch image</button>
+                            ...or try a random one <button type="submit" class="btn btn-info btn-sm label label-info pull-right" id="fetchImage">Fetch random image</button>
                         </div>
                         <div class="card-block">
 
@@ -77,13 +77,13 @@
 
                     <div class="card">
                         <div class="card-header">
-                            Stats <span class="pull-right">(Available threads: @availableThreads)</span>
+                            Stats
                         </div>
                         <div class="card-block">
 
                             <div class="btn-group" data-toggle="buttons">
                                 <label class="btn btn-sm btn-secondary threadSelector active" data-threaded="true" data-target="multi">
-                                    <input type="radio" autocomplete="off" checked> Multi Thread
+                                    <input type="radio" autocomplete="off" checked> Multi-Thread (@availableThreads threads)
                                 </label>
                                 <label class="btn btn-sm btn-secondary threadSelector" data-threaded="false" data-target="single">
                                     <input type="radio" autocomplete="off"> Single Thread
@@ -111,10 +111,10 @@
             <br/>
 
             @* Results placeholder *@
-            <div class="row">
-                <div class="col col-xs-12" id="resultsPlaceholder">
+            <div class="row" id="resultsPlaceholder">
+                @*<div class="col col-xs-12" id="resultsPlaceholder">*@
 
-                </div>
+                @*</div>*@
             </div>
 
         </div>
