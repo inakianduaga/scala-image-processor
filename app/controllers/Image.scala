@@ -4,16 +4,17 @@ import play.api.mvc._
 import com.sksamuel.{scrimage => ImgLib}
 import concurrent._
 import java.io.File
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+//import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.Play
 import play.api.libs.json.Json
+import java.util.concurrent.Executor
 
 /**
  * Handles image processing
  */
 object Image extends Controller {
 
-  private val filters: List[ImgLib.Filter] = List(
+  private lazy val filters: List[ImgLib.Filter] = List(
     ImgLib.filter.BlurFilter,
     ImgLib.filter.ColorHalftoneFilter(1),
     ImgLib.filter.DiffuseFilter(3),
@@ -49,6 +50,25 @@ object Image extends Controller {
 
   private val imgStorageFolder = s"${Play.current.path}/public/images/generated/"
 
+  private implicit val executionContext = ExecutionContext.fromExecutor(new Executor {
+    def execute(task: Runnable) = task.run()
+  })
+
+  /**
+   * https://notepad.mmakowski.com/Tech/Scala%20Futures%20on%20a%20Single%20Thread
+   * http://engineering.monsanto.com/2015/06/15/implicits-futures/
+   */
+  def setExecutionContextToSingleThreaded[A](action: Action[A])= Action.async(action.parser) { request =>
+    implicit val synchronousExecutionContext = ExecutionContext.fromExecutor(new Executor {
+      def execute(task: Runnable) = task.run()
+    })
+    action(request)
+  }
+
+  def processSingleThreaded = setExecutionContextToSingleThreaded {
+    process
+  }
+
   def process = Action.async { implicit request =>
 
     val image = this.getImageFromPost(request)
@@ -66,7 +86,7 @@ object Image extends Controller {
   private def applyFiltersMultithreaded(image: ImgLib.Image): Future[List[ImgLib.Image]] = {
     Future.sequence(this.filters.map(filter => Future {
       image.filter(filter)
-    }))
+    }(this.executionContext)))
   }
 
   private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) = {
