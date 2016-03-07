@@ -3,8 +3,8 @@ var ScalaDemo = (function() {
     var RANDOM_IMAGE_SIZE = {
         //width: 1200,
         //height: 800,
-        width: 1000,
-        height: 600,
+        width: 800,
+        height: 500,
     };
 
     var multiThreaded = true;

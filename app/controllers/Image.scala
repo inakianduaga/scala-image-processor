@@ -7,12 +7,17 @@ import java.io.File
 //import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.Play
 import play.api.libs.json.Json
-import java.util.concurrent.Executor
+import services.Contexts._
 
 /**
  * Handles image processing
  */
 object Image extends Controller {
+
+  /**
+   * How long to wait to delete the generated images (so we don't run out of space)
+   */
+  private val deleteImagesAfter = 300 * 1000;
 
   private lazy val filters: List[ImgLib.Filter] = List(
     ImgLib.filter.BlurFilter,
@@ -24,21 +29,6 @@ object Image extends Controller {
 //    ImgLib.filter.HSBFilter(100, 44, 10),
     ImgLib.filter.OilFilter(2, 4),
     ImgLib.filter.RobertsFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
-    //    ImgLib.filter.TelevisionFilter,
     ImgLib.filter.SummerFilter(true),
     ImgLib.filter.TritoneFilter(150, 80, 50),
     ImgLib.filter.SolarizeFilter,
@@ -50,18 +40,11 @@ object Image extends Controller {
 
   private val imgStorageFolder = s"${Play.current.path}/public/images/generated/"
 
-  private implicit val executionContext = ExecutionContext.fromExecutor(new Executor {
-    def execute(task: Runnable) = task.run()
-  })
-
   /**
    * https://notepad.mmakowski.com/Tech/Scala%20Futures%20on%20a%20Single%20Thread
    * http://engineering.monsanto.com/2015/06/15/implicits-futures/
    */
   def setExecutionContextToSingleThreaded[A](action: Action[A])= Action.async(action.parser) { request =>
-    implicit val synchronousExecutionContext = ExecutionContext.fromExecutor(new Executor {
-      def execute(task: Runnable) = task.run()
-    })
     action(request)
   }
 
@@ -77,7 +60,10 @@ object Image extends Controller {
 
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
+    storedImages.map(images => this.queuedDeleteImages(images))
+
     storedImages.map(images => Ok(Json.toJson(images)))
+
   }
 
   /**
@@ -86,7 +72,7 @@ object Image extends Controller {
   private def applyFiltersMultithreaded(image: ImgLib.Image): Future[List[ImgLib.Image]] = {
     Future.sequence(this.filters.map(filter => Future {
       image.filter(filter)
-    }(this.executionContext)))
+    }))
   }
 
   private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) = {
@@ -106,6 +92,11 @@ object Image extends Controller {
 
   private def generateRandomPostId(): Integer = {
     scala.util.Random.nextInt(1000000)
+  }
+
+  private def queuedDeleteImages(images: List[String]): Unit = {
+    Thread.sleep(this.deleteImagesAfter)
+    images.map(path => new File(this.imgStorageFolder + path.split("/").last).delete())
   }
 
 }
