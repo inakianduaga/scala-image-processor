@@ -6,7 +6,6 @@ import concurrent._
 import java.io.File
 //import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.Play
-import play.api.libs.json.Json
 import services.Contexts._
 
 /**
@@ -55,27 +54,22 @@ object Image extends Controller {
   def process = Action.async { implicit request =>
 
     val image = this.getImageFromPost(request)
-
     val imageFilteredList = this.applyFiltersMultithreaded(image)
-
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
     storedImages.map(images => this.queuedDeleteImages(images))
-
     storedImages.map(images => Ok(Json.toJson(images)))
-
   }
 
   /**
    * Run a list of filters on an image in parallel and return a Future with the list of processed images
    */
-  private def applyFiltersMultithreaded(image: ImgLib.Image): Future[List[ImgLib.Image]] = {
+  private def applyFiltersMultithreaded(image: ImgLib.Image): Future[List[ImgLib.Image]] =
     Future.sequence(this.filters.map(filter => Future {
       image.filter(filter)
     }))
-  }
 
-  private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) = {
+  private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) =
     images.map(imageList => imageList.map(image => {
       val imageName = s"${this.generateRandomPostId()}.png"
       val path = s"${this.imgStorageFolder}$imageName"
@@ -83,20 +77,20 @@ object Image extends Controller {
       image.output(newFile)
       s"/assets/images/generated/$imageName"
     }))
-  }
 
-  private def getImageFromPost(request: play.api.mvc.Request[AnyContent]): ImgLib.Image = {
-    val uploadedImageTempFile = request.body.asMultipartFormData.get.files.head.ref.file
-    ImgLib.Image.fromFile(uploadedImageTempFile)
-  }
 
-  private def generateRandomPostId(): Integer = {
-    scala.util.Random.nextInt(1000000)
-  }
+  private def getImageFromPost(request: play.api.mvc.Request[AnyContent]): ImgLib.Image =
+    ImgLib.Image.fromFile(request.body.asMultipartFormData.get.files.head.ref.file)
+
+  private def generateRandomPostId(): Integer = scala.util.Random.nextInt(1000000)
 
   private def queuedDeleteImages(images: List[String]): Unit = {
     Thread.sleep(this.deleteImagesAfter)
-    images.map(path => new File(this.imgStorageFolder + path.split("/").last).delete())
+    images
+      .map(path => this.imgStorageFolder + path.split("/").last)
+      .foreach(this.removeFile)
   }
+
+  private def removeFile(path: String): Unit = new File(path).delete()
 
 }
