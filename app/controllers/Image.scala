@@ -35,7 +35,12 @@ object Image extends Controller {
     ImgLib.filter.TelevisionFilter,
     ImgLib.filter.TwirlFilter(1.1, 70),
     ImgLib.filter.VignetteFilter(),
-    ImgLib.filter.VintageFilter
+    ImgLib.filter.VintageFilter,
+    ImgLib.filter.ErrorDiffusionHalftoneFilter(),
+    ImgLib.filter.GrayscaleFilter,
+    ImgLib.filter.InvertFilter,
+    ImgLib.filter.MaximumFilter,
+    ImgLib.filter.OffsetFilter(10, 10)
   )
 
   private val imgStorageFolder = "/tmp/"
