@@ -38,7 +38,7 @@ object Image extends Controller {
     ImgLib.filter.VintageFilter
   )
 
-  private val imgStorageFolder = "/public/images/generated/"
+  private val imgStorageFolder = "/tmp/"
 
   /**
    * https://notepad.mmakowski.com/Tech/Scala%20Futures%20on%20a%20Single%20Thread
@@ -73,8 +73,8 @@ object Image extends Controller {
   private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) =
     images.map(imageList => imageList.map(image => {
       val imageName = s"${this.generateRandomPostId()}.png"
-      image.output(Play.getFile(s"${this.imgStorageFolder}$imageName"))
-      s"/assets/images/generated/$imageName"
+      image.output(new File(s"${this.imgStorageFolder}$imageName"))
+      s"/generated/$imageName"
     }))
 
   private def getImageFromPost(request: play.api.mvc.Request[AnyContent]): ImgLib.Image =

@@ -13,4 +13,3 @@ libraryDependencies += "com.sksamuel.scrimage" %% "scrimage-filters" % "2.1.0"
 initialCommands in (Test, console) := """ammonite.repl.Main.run("")"""
 
 lazy val root = project.in(file(".")).enablePlugins(PlayScala)
-

@@ -2,11 +2,11 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET         /                    controllers.Application.index
-
+# Serve application
+GET         /                      controllers.Application.index
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file        controllers.Assets.versioned(path="/public", file)
-
-POST        /image/single        controllers.Image.processSingleThreaded
-POST        /image/threaded      controllers.Image.process
+GET         /generated/:fileName  controllers.ServeAssets.temporary(fileName: String)
+# API
+POST        /image/single          controllers.Image.processSingleThreaded
+POST        /image/threaded        controllers.Image.process
