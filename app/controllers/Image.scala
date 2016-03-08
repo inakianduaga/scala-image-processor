@@ -6,6 +6,7 @@ import concurrent._
 import java.io.File
 //import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.Play
+import play.api.Play.current
 import services.Contexts._
 import play.api.libs.json.Json
 
@@ -26,7 +27,6 @@ object Image extends Controller {
     ImgLib.filter.ContourFilter(),
     ImgLib.filter.EdgeFilter,
     ImgLib.filter.GammaFilter(2.2),
-//    ImgLib.filter.HSBFilter(100, 44, 10),
     ImgLib.filter.OilFilter(2, 4),
     ImgLib.filter.RobertsFilter,
     ImgLib.filter.SummerFilter(true),
@@ -38,7 +38,7 @@ object Image extends Controller {
     ImgLib.filter.VintageFilter
   )
 
-  private val imgStorageFolder = s"${Play.current.path}/public/images/generated/"
+  private val imgStorageFolder = "/public/images/generated/"
 
   /**
    * https://notepad.mmakowski.com/Tech/Scala%20Futures%20on%20a%20Single%20Thread
@@ -73,12 +73,9 @@ object Image extends Controller {
   private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) =
     images.map(imageList => imageList.map(image => {
       val imageName = s"${this.generateRandomPostId()}.png"
-      val path = s"${this.imgStorageFolder}$imageName"
-      val newFile = new File(path)
-      image.output(newFile)
+      image.output(Play.getFile(s"${this.imgStorageFolder}$imageName"))
       s"/assets/images/generated/$imageName"
     }))
-
 
   private def getImageFromPost(request: play.api.mvc.Request[AnyContent]): ImgLib.Image =
     ImgLib.Image.fromFile(request.body.asMultipartFormData.get.files.head.ref.file)
