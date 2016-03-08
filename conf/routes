@@ -8,5 +8,5 @@ GET         /                      controllers.Application.index
 GET         /assets/*file        controllers.Assets.versioned(path="/public", file)
 GET         /generated/:fileName  controllers.ServeAssets.temporary(fileName: String)
 # API
-POST        /image/single          controllers.Image.processSingleThreaded
-POST        /image/threaded        controllers.Image.process
+POST        /image/single          controllers.SingleThreaded.process
+POST        /image/threaded        controllers.MultiThreaded.process

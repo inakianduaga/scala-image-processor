@@ -1,19 +1,12 @@
-package controllers
+package services
 
-import play.api.mvc._
-import com.sksamuel.{scrimage => ImgLib}
-import concurrent._
 import java.io.File
-//import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.Play
-import play.api.Play.current
-import services.Contexts._
-import play.api.libs.json.Json
+import com.sksamuel.{scrimage => ImgLib}
+import play.api.mvc.Request
+import play.api.mvc.{AnyContent}
+import scala.concurrent.{Future, ExecutionContext}
 
-/**
- * Handles image processing
- */
-object Image extends Controller {
+class ImageProcessor(implicit context: ExecutionContext) {
 
   /**
    * How long to wait to delete the generated images (so we don't run out of space)
@@ -45,55 +38,43 @@ object Image extends Controller {
 
   private val imgStorageFolder = "/tmp/"
 
-  /**
-   * https://notepad.mmakowski.com/Tech/Scala%20Futures%20on%20a%20Single%20Thread
-   * http://engineering.monsanto.com/2015/06/15/implicits-futures/
-   */
-  def setExecutionContextToSingleThreaded[A](action: Action[A])= Action.async(action.parser) { request =>
-    action(request)
-  }
-
-  def processSingleThreaded = setExecutionContextToSingleThreaded {
-    process
-  }
-
-  def process = Action.async { implicit request =>
-
+  def process(request: Request[AnyContent]) = {
     val image = this.getImageFromPost(request)
     val imageFilteredList = this.applyFiltersMultithreaded(image)
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
     storedImages.map(images => this.queuedDeleteImages(images))
-    storedImages.map(images => Ok(Json.toJson(images)))
-  }
 
+    storedImages
+  }
   /**
    * Run a list of filters on an image in parallel and return a Future with the list of processed images
    */
-  private def applyFiltersMultithreaded(image: ImgLib.Image): Future[List[ImgLib.Image]] =
+  def applyFiltersMultithreaded(image: ImgLib.Image): Future[List[ImgLib.Image]] =
     Future.sequence(this.filters.map(filter => Future {
       image.filter(filter)
     }))
 
-  private def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) =
+  def writeFilesToFolder(folder: String, images: Future[List[ImgLib.Image]]) =
     images.map(imageList => imageList.map(image => {
       val imageName = s"${this.generateRandomPostId()}.png"
-      image.output(new File(s"${this.imgStorageFolder}$imageName"))
+      image.output(new File(s"${folder}$imageName"))
       s"/generated/$imageName"
     }))
 
-  private def getImageFromPost(request: play.api.mvc.Request[AnyContent]): ImgLib.Image =
+  def getImageFromPost(request: Request[AnyContent]): ImgLib.Image =
     ImgLib.Image.fromFile(request.body.asMultipartFormData.get.files.head.ref.file)
 
-  private def generateRandomPostId(): Integer = scala.util.Random.nextInt(1000000)
-
-  private def queuedDeleteImages(images: List[String]): Unit = {
+  def queuedDeleteImages(images: List[String]): Unit = {
     Thread.sleep(this.deleteImagesAfter)
     images
       .map(path => this.imgStorageFolder + path.split("/").last)
       .foreach(this.removeFile)
   }
 
+  private def generateRandomPostId(): Integer = scala.util.Random.nextInt(1000000)
+
   private def removeFile(path: String): Unit = new File(path).delete()
+
 
 }
