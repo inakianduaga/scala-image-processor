@@ -7,6 +7,7 @@ import java.io.File
 //import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.Play
 import services.Contexts._
+import play.api.libs.json.Json
 
 /**
  * Handles image processing
