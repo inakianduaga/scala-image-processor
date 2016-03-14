@@ -1,4 +1,4 @@
-var ScalaDemo = (function() {
+var ScalaDemo = (() => {
 
     var RANDOM_IMAGE_SIZE = {
         width: 1000,
@@ -96,6 +96,30 @@ var ScalaDemo = (function() {
 
     var stopTimer = () => $(getTimerDomId()).TimeCircles().stop();
 
+    /**
+     * Websocket communication stream
+     */
+    var websocket = (() => {
+        var ws = new WebSocket("ws://localhost:9000/ws");
+
+        ws.onopen = function () {
+            console.log("Connection opened");
+        };
+
+        ws.onclose = function () {
+            console.log("Connection is closed...");
+        };
+
+        var serverStream = Bacon.fromEventTarget(ws, "message").map(function(event) {
+            var dataString = event.data;
+            return JSON.parse(dataString);
+        });
+
+        return {
+            serverStream
+        };
+    })();
+
     return {
         RANDOM_IMAGE_URL,
         getServerEndpoint,
@@ -108,6 +132,7 @@ var ScalaDemo = (function() {
         setThreadOption,
         startTimer,
         stopTimer,
+        websocket,
     }
 })();
 
@@ -139,3 +164,6 @@ $('body').on('click', '.threadSelector', function() {
     ScalaDemo.setThreadOption($(this).data('threaded'));
     $('.progressWrapper').addClass('hide').filter('.'+$(this).data('target')).removeClass('hide');
 });
+
+// Regenerate gallery every time the server pushes an update
+ScalaDemo.websocket.serverStream.onValue(ScalaDemo.generateResultsGallery);

@@ -3,10 +3,12 @@
 # ~~~~
 
 # Serve application
-GET         /                      controllers.Application.index
+GET         /                           controllers.Application.index
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file        controllers.Assets.versioned(path="/public", file)
-GET         /generated/:fileName  controllers.ServeAssets.temporary(fileName: String)
+GET         /assets/*file               controllers.Assets.versioned(path="/public", file)
+GET         /generated/:fileName        controllers.ServeAssets.temporary(fileName: String)
 # API
-POST        /image/single          controllers.SingleThreaded.process
-POST        /image/threaded        controllers.MultiThreaded.process
+POST        /image/single               controllers.SingleThreaded.process
+POST        /image/threaded             controllers.MultiThreaded.process
+# Websocket
+GET         /ws                         controllers.Application.websocket
