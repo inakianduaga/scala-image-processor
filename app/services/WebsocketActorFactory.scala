@@ -6,5 +6,5 @@ import WebsocketActor._
 
 @Singleton
 class WebsocketActorFactory @Inject() (system: ActorSystem) {
-  val helloActor = system.actorOf(props(), "hello-actor")
+  //val helloActor = system.actorOf(props(), "hello-actor")
 }
