@@ -43,8 +43,7 @@ class ImageProcessor(implicit context: ExecutionContext) {
     val imageFilteredList = this.applyFiltersMultithreaded(image)
     val storedImages = this.writeFilesToFolder(this.imgStorageFolder, imageFilteredList)
 
-    storedImages.map(images => this.queuedDeleteImages(images))
-
+    storedImages.foreach(this.queuedDeleteImages(_))
     storedImages
   }
   /**
@@ -68,7 +67,7 @@ class ImageProcessor(implicit context: ExecutionContext) {
   def queuedDeleteImages(images: List[String]): Unit = {
     Thread.sleep(this.deleteImagesAfter)
     images
-      .map(path => this.imgStorageFolder + path.split("/").last)
+      .map(this.imgStorageFolder + _.split("/").last)
       .foreach(this.removeFile)
   }
 

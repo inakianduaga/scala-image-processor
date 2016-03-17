@@ -3,7 +3,7 @@ Scala Image Processor demo
 
 [![Heroku](http://heroku-badge.herokuapp.com/?app=scala-image-processor&style=flat)] 
 
-> Small demo to test multi vs single thread performance when converting images
+> Small demo to test multi vs single thread performance when converting images, using websockets for communicating with client
 
 This small app applies a set of filters to an image (using [scrimage library](https://github.com/sksamuel/scrimage)) in order to test performance in two different execution contexts.
 
@@ -46,5 +46,13 @@ single-thread-context {
 
 ## Generated Images:
 
-Because of hosting limitations, images will be wiped 5 minutes after creation
+Because of hosting limitations, *images will be wiped 5 minutes after creation*
+
+## Websockets
+
+Each pageview registers a websocket connection with the backend, and the websocket identifier is linked to the user session Id. When a request for processing images comes from the user,
+the session ID is used to lookup the correct websocket to send the update after processing has finished. 
+
+- Due to Heroku's hosting limitations, the client must send a ping to keep the connection alive every 30 secs.
+
 

@@ -1,3 +1,7 @@
+// ============
+// API
+// ============
+
 var ScalaDemo = (() => {
 
     var RANDOM_IMAGE_SIZE = {
@@ -45,9 +49,7 @@ var ScalaDemo = (() => {
         var request = new XMLHttpRequest();
         request.open("POST", url);
         request.send(formData);
-        //request.addEventListener('load', () => success(JSON.parse(request.response)));
-
-    }
+    };
 
     var imageFromBinary = (blob) => {
         var img = document.createElement('img');
@@ -61,10 +63,8 @@ var ScalaDemo = (() => {
         stopTimer();
         $(galleryPlaceholder).html('');
         imageList
-            //.map(path => '<img src="'+path+'" />')
-            .forEach(path => $(galleryPlaceholder).prepend($('<div class="col col-xs-12 col-md-3"><a href="'+path+'" target="_blank"><img src="'+path+'"></a></div>')) );
-
-        //$(galleryPlaceholder).collagePlus();
+            .map(path => '<div class="col col-xs-12 col-md-3"><a href="'+path+'" target="_blank"><img src="'+path+'"></a></div>')
+            .forEach(html => $(galleryPlaceholder).prepend($(html)));
     };
 
     var toggleThreadOption = () => multiThreaded = !multiThreaded;
@@ -137,7 +137,9 @@ var ScalaDemo = (() => {
 })();
 
 
+// ============
 // Dom bindings
+// ============
 
 $('body').on('click', '#fetchImage', () => {
     ScalaDemo.downloadFile(ScalaDemo.RANDOM_IMAGE_URL, (binary) => {
