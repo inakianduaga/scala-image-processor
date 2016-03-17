@@ -21,12 +21,13 @@ object WebsocketActor {
       .map(_ ! payload)
 
   def props(out: ActorRef) = Props(new WebsocketActor(out))
-
 }
 
 class WebsocketActor(out: ActorRef) extends Actor {
   def receive = {
     case msg: String =>
-      out ! ("I received your message: " + msg)
+      println(msg)
+    case msg: JsValue =>
+      println(msg)
   }
 }

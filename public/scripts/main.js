@@ -13,6 +13,8 @@ var ScalaDemo = (() => {
 
     var multiThreaded = true;
 
+    var websocketKeepAliveInterval = 5 * 1000;
+
     var galleryPlaceholder = $('#resultsPlaceholder').eq(0);
 
     var RANDOM_IMAGE_URL = 'https://unsplash.it/'+RANDOM_IMAGE_SIZE.width+'/+'+RANDOM_IMAGE_SIZE.height+'?random';
@@ -116,8 +118,12 @@ var ScalaDemo = (() => {
             return JSON.parse(dataString);
         });
 
+        var intervalStream = Bacon.interval(websocketKeepAliveInterval, true);
+
         return {
-            serverStream
+            intervalStream,
+            serverStream,
+            ws
         };
     })();
 
@@ -170,3 +176,12 @@ $('body').on('click', '.threadSelector', function() {
 
 // Regenerate gallery every time the server pushes an update
 ScalaDemo.websocket.serverStream.onValue(ScalaDemo.generateResultsGallery);
+
+// Keep alive websocket connection (otherwise Heroku kills it after 30 secs idle)
+ScalaDemo.websocket.ws.onopen = () =>
+    ScalaDemo.websocket.intervalStream.onValue(value =>
+       ScalaDemo.websocket.ws.send(JSON.stringify({"heartbeat": true}))
+    );
+
+
+
