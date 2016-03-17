@@ -105,20 +105,22 @@ var ScalaDemo = (() => {
     var websocket = (() => {
         var ws = new WebSocket(`ws://${ window.location.hostname}:${ window.location.port }${ SERVER_URL_ENDPOINTS.websocket }`);
 
-        ws.onopen = function () {
-            console.log("Connection opened");
-        };
+        // Event streams
+        var onOpenStream = Bacon.fromEventTarget(ws, "open");
+        var onCloseStream = Bacon.fromEventTarget(ws, "close");
+        var messageStream = Bacon.fromEventTarget(ws, "message");
 
-        ws.onclose = function () {
-            console.log("Connection is closed...");
-        };
-
-        var serverStream = Bacon.fromEventTarget(ws, "message").map(function(event) {
+        // Derived streams
+        var serverStream = messageStream.map(function(event) {
             var dataString = event.data;
             return JSON.parse(dataString);
         });
 
-        var intervalStream = Bacon.interval(websocketKeepAliveInterval, true);
+        var intervalStream = Bacon.interval(websocketKeepAliveInterval, true).skipUntil(onOpenStream);
+
+        // Info
+        onOpenStream.onValue(v => console.log('Websocket connection opened'));
+        onCloseStream.onValue(v => console.log('Websocket connection is closed...'));
 
         return {
             intervalStream,
@@ -178,10 +180,9 @@ $('body').on('click', '.threadSelector', function() {
 ScalaDemo.websocket.serverStream.onValue(ScalaDemo.generateResultsGallery);
 
 // Keep alive websocket connection (otherwise Heroku kills it after 30 secs idle)
-ScalaDemo.websocket.ws.onopen = () =>
-    ScalaDemo.websocket.intervalStream.onValue(value =>
-       ScalaDemo.websocket.ws.send(JSON.stringify({"heartbeat": true}))
-    );
+ScalaDemo.websocket.intervalStream.onValue(value =>
+    ScalaDemo.websocket.ws.send(JSON.stringify({"heartbeat": true}))
+);
 
 
 
