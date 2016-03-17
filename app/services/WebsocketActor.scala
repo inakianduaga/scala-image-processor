@@ -1,16 +1,20 @@
 package services
 
 import akka.actor._
-import akka.actor.ActorSystem
-import play.api.libs.concurrent.Akka // Default Akka play system, accessible with Akka.system.actorOf (at least as of Play 2.3.x)
-import play.api.Play.current
 
 object WebsocketActor {
-  def props(out: ActorRef) = {
-     Props(new WebsocketActor(out))
-//    val what = Akka.system.actorSelection("some path")
 
-//      val actor = Akka.system.actorOf(Props(new WebsocketActor(out)), name = "SOME_ID_HERE") // create an actor with a specific ID (which could be stored in the session)
+  var dictionary: Map[String, String] = Map();
+
+  def addActorPath(id: String, actorPath: String) = {
+    dictionary += (id -> actorPath)
+    println(s"linking id $id to actorPath $actorPath")
+  }
+
+  def getActorPath(id: String) = dictionary.get(id)
+
+  def props(out: ActorRef) = {
+    Props(new WebsocketActor(out))
   }
 
 }

@@ -45,7 +45,7 @@ var ScalaDemo = (() => {
         var request = new XMLHttpRequest();
         request.open("POST", url);
         request.send(formData);
-        request.addEventListener('load', () => success(JSON.parse(request.response)));
+        //request.addEventListener('load', () => success(JSON.parse(request.response)));
 
     }
 
