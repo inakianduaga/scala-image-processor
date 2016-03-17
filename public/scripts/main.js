@@ -13,7 +13,7 @@ var ScalaDemo = (() => {
 
     var multiThreaded = true;
 
-    var websocketKeepAliveInterval = 5 * 1000;
+    var websocketKeepAliveInterval = 25 * 1000;
 
     var galleryPlaceholder = $('#resultsPlaceholder').eq(0);
 
