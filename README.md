@@ -5,7 +5,12 @@ Scala Image Processor demo
 
 > Small demo to test multi vs single thread performance when converting images, using a combination of REST / websockets for communicating between the client and server.
 
-This small app applies a set of filters to an image (using [scrimage library](https://github.com/sksamuel/scrimage)) in order to test performance in two different execution contexts.
+This small app applies a set of filters to an image (using [scrimage library](https://github.com/sksamuel/scrimage)) in order to test performance in two different execution contexts. 
+Some of the tech used:
+
+- Play framework for the MVC backend 
+- Akka actor system to handle websocket communications
+- BaconJS for handling websockets communications as streams
 
 ## [DEMO](http://scala-image-processor.herokuapp.com/)
 
@@ -43,6 +48,7 @@ single-thread-context {
   throughput = 1
 }
 ```
+
 
 ## Generated Images:
 
