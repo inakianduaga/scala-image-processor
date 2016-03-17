@@ -3,7 +3,7 @@ Scala Image Processor demo
 
 ![Heroku](http://heroku-badge.herokuapp.com/?app=scala-image-processor&style=flat) 
 
-> Small demo to test multi vs single thread performance when converting images, using a combination of REST / websockets for communicating between the client and server.
+> Small demo to test multi vs single thread performance when converting images, using a combination of http / websockets for communicating between the client and server.
 
 This small app applies a set of filters to an image (using [scrimage library](https://github.com/sksamuel/scrimage)) in order to test performance in two different execution contexts. 
 Some of the tech used:
