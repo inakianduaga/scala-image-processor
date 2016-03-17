@@ -20,6 +20,7 @@ var ScalaDemo = (() => {
     var SERVER_URL_ENDPOINTS = {
         single: '/image/single',
         threaded: 'image/threaded',
+        websocket: '/ws'
     };
 
     var getServerEndpoint = () => multiThreaded ? SERVER_URL_ENDPOINTS.threaded : SERVER_URL_ENDPOINTS.single;
@@ -100,7 +101,7 @@ var ScalaDemo = (() => {
      * Websocket communication stream
      */
     var websocket = (() => {
-        var ws = new WebSocket("ws://localhost:9000/ws");
+        var ws = new WebSocket(`ws://${ window.location.hostname}:${ window.location.port }${ SERVER_URL_ENDPOINTS.websocket }`);
 
         ws.onopen = function () {
             console.log("Connection opened");
